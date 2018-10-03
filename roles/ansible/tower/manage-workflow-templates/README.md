@@ -35,7 +35,12 @@ ansible_tower:
 ansible_tower:
   admin_password: 'admin'
   workflow_templates:
-  - name: ""
+  - name: "Role Workflow"
+    description: "A workflow created from an ansible role"
+    nodes:
+    - name: "Hello World!"
+    - name: "Foo"
+    - name: "Bar"
 
 ```
 
