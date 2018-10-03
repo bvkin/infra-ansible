@@ -1,8 +1,8 @@
 {
-    "name": "{{ ansible_tower.workflow_templates.name }}",
-    "description": "{{ ansible_tower.workflow_templates.description | default('') }}",
+    "name": "{{ workflow_template.name }}",
+    "description": "{{ workflow_template.description | default('') }}",
     "extra_vars": "",
     "organization": null,
     "allow_simultaneous": true,
-    "ask_variables_on_launch": {{ ansible_tower.workflow_templates.ask_variables_on_launch | default(false) }}
+    "ask_variables_on_launch": {{workflow_template.ask_variables_on_launch | default(false) }}
 }

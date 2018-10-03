@@ -1,0 +1,25 @@
+---
+
+- set_fact:
+    job_template_id: "{{ job_template.id }}"
+  when:
+    - job_template.name == workflow_node.name
+  with_items:
+    - "{{ existing_job_templates_output.rest_output }}"
+  loop_control:
+    loop_var: job_template
+
+- name: "Load up the workflow nodes template"
+  uri:
+    url: "{{ ansible_tower.url | default(default_ansible_tower_url) }}/api/v2/workflow_job_templates/{{ workflow_template_id }}/workflow_nodes/"
+    user: "{{ ansible_tower.admin_username | default(default_ansible_tower_admin_username) }}"
+    password: "{{ ansible_tower.admin_password }}"
+    force_basic_auth: yes
+    method: POST
+    body: "{{ lookup('template', 'workflow-node-template.j2') }}"
+    body_format: 'json'
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+    validate_certs: no
+    status_code: 200,201,400
