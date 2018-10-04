@@ -19,6 +19,9 @@ The variables used must be defined in the Ansible Inventory using the `ansible_t
 |ansible_tower.workflow_templates.description|Description of the Workflow Template	|no||
 |ansible_tower.workflow_templates.permissions|Permissions to run the workflow (see below)	|no||
 |ansible_tower.workflow_templates.nodes|A list of job nodes to be added to a workflow (see below)	|no||
+|ansible_tower.workflow_templates.extra_vars|Extra Variables to be passed at runtime|no|nothing('')|
+|ansible_tower.workflow_templates.allow_simultaneous|Allows multiple instances of the workflow to run in parallel|no|true|
+
 
 **_Note:_** Workflow Template configuration will **only** happen if the `ansible_tower.workflow_templates` portion of the dictionary is defined. Likewise, the installation expects this section to be "complete" if specified as it otherwise may error out.
 
