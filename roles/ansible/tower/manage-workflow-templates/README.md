@@ -27,7 +27,7 @@ The variables used must be defined in the Ansible Inventory using the `ansible_t
 
 ### Permissions
 
-The Workflow Template can be configured with a set of permissions to control who can launch the template. This includes setting either a list of users or list of teams with the proper role assignment. An example of such an inventory is shown below:
+The Workflow Template can be configured with a set of permissions to control who can launch the template. This includes setting either a list of users or list of teams with the proper role assignment. **Warning** It is possible to give a user access to job_templates that he/she wouldn't normally have if it is used in a workflow_template that the user has permissions for. An example of such an inventory is shown below:
 
 ```yaml
 ansible_tower:
