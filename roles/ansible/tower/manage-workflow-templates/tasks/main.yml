@@ -66,7 +66,3 @@
 
   when:
   - ansible_tower.workflow_templates is defined
-  # - existing_workflow_templates_output is not defined
-  # - existing_job_templates_output is not defined
-  # - existing_users_output is not defined
-  # - existing_teams_output is not defined
