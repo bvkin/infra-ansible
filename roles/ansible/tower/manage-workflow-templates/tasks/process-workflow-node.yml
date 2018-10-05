@@ -23,3 +23,4 @@
       Accept: "application/json"
     validate_certs: no
     status_code: 200,201,400
+  when: parent_node is not defined
