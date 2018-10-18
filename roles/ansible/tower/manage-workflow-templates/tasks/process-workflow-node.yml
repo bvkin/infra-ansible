@@ -9,7 +9,11 @@
   loop_control:
     loop_var: job_template
 
-- name: "Load up the workflow nodes template"
+- set_fact:
+    parent_id: "{{ parent_id_refrence }}"
+  when: node_type == 'success' or node_type == 'failure'
+
+- name: "Load up the workflow nodes template if start"
   uri:
     url: "{{ ansible_tower.url | default(default_ansible_tower_url) }}/api/v2/workflow_job_templates/{{ workflow_template_id }}/workflow_nodes/"
     user: "{{ ansible_tower.admin_username | default(default_ansible_tower_admin_username) }}"
@@ -23,9 +27,45 @@
       Accept: "application/json"
     validate_certs: no
     status_code: 200,201,400
-  when: parent_node is not defined
+  register: workflow_node_output
+  when: node_type == 'start'
+
+- name: "Load up the workflow nodes template if success"
+  uri:
+    url: "{{ ansible_tower.url | default(default_ansible_tower_url) }}/api/v2/workflow_job_template_nodes/{{ parent_id }}/success_nodes/"
+    user: "{{ ansible_tower.admin_username | default(default_ansible_tower_admin_username) }}"
+    password: "{{ ansible_tower.admin_password }}"
+    force_basic_auth: yes
+    method: POST
+    body: "{{ lookup('template', 'workflow-node-template.j2') }}"
+    body_format: 'json'
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+    validate_certs: no
+    status_code: 200,201,400
+  when: node_type == 'success'
+
+- name: "Load up the workflow nodes template if failure"
+  uri:
+    url: "{{ ansible_tower.url | default(default_ansible_tower_url) }}/api/v2/workflow_job_template_nodes/{{ parent_id }}/failure_nodes/"
+    user: "{{ ansible_tower.admin_username | default(default_ansible_tower_admin_username) }}"
+    password: "{{ ansible_tower.admin_password }}"
+    force_basic_auth: yes
+    method: POST
+    body: "{{ lookup('template', 'workflow-node-template.j2') }}"
+    body_format: 'json'
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+    validate_certs: no
+    status_code: 200,201,400
+  when: node_type == 'failure'
 
 - name: "Process the inventory success nodes"
+  vars:
+    node_type: 'success'
+    parent_id_refrence: "{{ workflow_node_output.json.id }}"
   include_tasks: process-workflow-node.yml
   with_items:
   - "{{ workflow_node.success_nodes | default([]) }}"
@@ -33,6 +73,9 @@
     loop_var: workflow_node
 
 - name: "Process the inventory failiure nodes"
+  vars:
+    node_type: 'failure'
+    parent_id_refrence: "{{ workflow_node_output.json.id }}"
   include_tasks: process-workflow-node.yml
   with_items:
   - "{{ workflow_node.failure_nodes | default([]) }}"
