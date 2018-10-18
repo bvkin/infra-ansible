@@ -1,9 +1,12 @@
 ---
 
+- debug:
+    msg: "{{ workflow_node.unified_job_template.name }}"
+
 - set_fact:
     job_template_id: "{{ job_template.id }}"
   when:
-    - job_template.name == workflow_node.name
+    - job_template.name == workflow_node.unified_job_template.name
   with_items:
     - "{{ existing_job_templates_output.rest_output }}"
   loop_control:

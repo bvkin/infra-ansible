@@ -31,10 +31,11 @@
     status_code: 200,201,400
   register: workflow_template_rest_output
 
-- set_fact:
+- name: "Save new workflow template id"
+  set_fact:
     workflow_template_id: "{{ workflow_template_rest_output.json.id }}"
 
-- name: "Process the workflow nodes"
+- name: "Process the inventory workflow nodes"
   include_tasks: process-workflow-node.yml
   with_items:
   - "{{ workflow_template.nodes }}"
