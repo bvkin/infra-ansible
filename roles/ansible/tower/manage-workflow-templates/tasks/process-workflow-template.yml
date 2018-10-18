@@ -35,7 +35,7 @@
   set_fact:
     workflow_template_id: "{{ workflow_template_rest_output.json.id }}"
 
-- name: "Process the inventory workflow nodes"
+- name: "Process the inventory starting nodes"
   include_tasks: process-workflow-node.yml
   with_items:
   - "{{ workflow_template.nodes }}"

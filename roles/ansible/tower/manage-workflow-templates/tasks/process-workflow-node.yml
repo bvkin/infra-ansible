@@ -1,8 +1,5 @@
 ---
 
-- debug:
-    msg: "{{ workflow_node.unified_job_template.name }}"
-
 - set_fact:
     job_template_id: "{{ job_template.id }}"
   when:
@@ -27,3 +24,17 @@
     validate_certs: no
     status_code: 200,201,400
   when: parent_node is not defined
+
+- name: "Process the inventory success nodes"
+  include_tasks: process-workflow-node.yml
+  with_items:
+  - "{{ workflow_node.success_nodes | default([]) }}"
+  loop_control:
+    loop_var: workflow_node
+
+- name: "Process the inventory failiure nodes"
+  include_tasks: process-workflow-node.yml
+  with_items:
+  - "{{ workflow_node.failure_nodes | default([]) }}"
+  loop_control:
+    loop_var: workflow_node
