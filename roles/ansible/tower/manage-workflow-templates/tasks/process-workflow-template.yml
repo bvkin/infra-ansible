@@ -40,7 +40,7 @@
     node_type: 'start'
   include_tasks: process-workflow-node.yml
   with_items:
-  - "{{ workflow_template.nodes }}"
+  - "{{ workflow_template.nodes | flatten_workflow_nodes }}"
   loop_control:
     loop_var: workflow_node
 
