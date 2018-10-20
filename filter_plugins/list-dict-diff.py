@@ -21,13 +21,11 @@ def flatten_workflow_nodes(workflows):
 
 
 def gen_flattened_list(workflow, node_index, parent_index, node_type, flattened_nodes):
-    child_nodes = []
-    child_index = node_index + 1
     current_node = [{
      'job_name': workflow['unified_job_template']['name'],
      'type': node_type,
      'index': node_index,
-     'parnet_index': parent_index
+     'parent_index': parent_index
    }]
 
 
@@ -36,6 +34,7 @@ def gen_flattened_list(workflow, node_index, parent_index, node_type, flattened_
             return current_node
 
     flattened_nodes = flattened_nodes + current_node
+    child_index = node_index + 1
 
     if ('success_nodes' in workflow and len(workflow['success_nodes']) > 0):
         new_nodes = []
