@@ -18,10 +18,8 @@ The variables used must be defined in the Ansible Inventory using the `ansible_t
 |ansible_tower.workflow_templates.name|Name of the Job Template|yes||
 |ansible_tower.workflow_templates.description|Description of the Workflow Template	|no||
 |ansible_tower.workflow_templates.permissions|Permissions to run the workflow (see below)	|no||
-|ansible_tower.workflow_templates.nodes|A list of job nodes to be added to a workflow (see below)	|no||
-|ansible_tower.workflow_templates.extra_vars|Extra Variables to be passed at runtime|no|nothing('')|
 |ansible_tower.workflow_templates.allow_simultaneous|Allows multiple instances of the workflow to run in parallel|no|true|
-
+|ansible_tower.workflow_templates.nodes|Structure to define the job execution of the workflow (see below)	|no||
 
 **_Note:_** Workflow Template configuration will **only** happen if the `ansible_tower.workflow_templates` portion of the dictionary is defined. Likewise, the installation expects this section to be "complete" if specified as it otherwise may error out.
 
@@ -52,20 +50,28 @@ ansible_tower:
 ansible_tower:
   admin_password: 'admin'
   workflow_templates:
-  - name: "Role Workflow"
-    description: "My workflow 1"
+  - name: "Workflow 1"
+    description: "My Workflow 1"
     nodes:
-    - name: "Hello World"
-    - name: "Foo"
-    - name: "Bar"
+      - unified_job_template:
+          name: "Job1"
+        success_nodes:
+          - unified_job_template:
+              name: "Job2"
+          - unified_job_template:
+              name: "Job3"
+        failure_nodes:
+          - unified_job_template:
+              name: "Job4"
+          - unified_job_template:
+              name: "Job5"
     permissions:
       teams:
-      - name: team1
-        role: Execute
+        - name: team1
+          role: Execute
       users:
-      - name: user1
-        role: Execute
-
+        - name: user1
+          role: Execute
 ```
 
 ## Example Playbook
