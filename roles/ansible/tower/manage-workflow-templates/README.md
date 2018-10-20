@@ -23,6 +23,33 @@ The variables used must be defined in the Ansible Inventory using the `ansible_t
 
 **_Note:_** Workflow Template configuration will **only** happen if the `ansible_tower.workflow_templates` portion of the dictionary is defined. Likewise, the installation expects this section to be "complete" if specified as it otherwise may error out.
 
+### Workflow Nodes
+The Workflow Template nodes structure is defined in the `workflow_templates.nodes` variable. This consists of several variables which should be defined in a tree structure. The variables for each node is explained below.
+
+| Variable | Description | Required | Defaults |
+|:---------|:------------|:---------|:---------|
+|unified_job_template.name|Name of the job_template to use for the node| yes| no ||
+|success_nodes|List of job nodes to be run after successful execution| no| no ||
+|no_nodes|List of job nodes to be run after failure execution| no| no ||
+
+An example of such an inventory is shown below.
+
+```yaml
+ansible_tower:
+  workflow_templates:
+  - name: Example Workflow Template
+    nodes:
+      - unified_job_template:
+          name: "Foo"
+        success_nodes:
+          - unified_job_template:
+              name: "Phone Home Success"
+        failure_nodes:
+          - unified_job_template:
+              name: "Phone Home Error"
+
+```
+
 ### Permissions
 
 The Workflow Template can be configured with a set of permissions to control who can launch the template. This includes setting either a list of users or list of teams with the proper role assignment. **Warning** It is possible to give a user access to job_templates that he/she wouldn't normally have if it is used in a workflow_template that the user has permissions for. An example of such an inventory is shown below:
