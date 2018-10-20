@@ -1,6 +1,7 @@
 ---
 
-- set_fact:
+- name: "Find id of current job"
+  set_fact:
     job_template_id: "{{ job_template.id }}"
   when:
     - job_template.name == workflow_node.job_name
@@ -8,11 +9,6 @@
     - "{{ existing_job_templates_output.rest_output }}"
   loop_control:
     loop_var: job_template
-
-- set_fact:
-    workflow_node_start_output: []
-    workflow_node_success_output: []
-    workflow_node_falure_output: []
 
 - block:
   - name: "Load up the workflow nodes template if start"
@@ -31,7 +27,7 @@
       status_code: 200,201,400
     register: workflow_node_start_output
 
-  - name: Add id to dictionary
+  - name: "Add id to dictionary"
     set_fact:
       job_node_uids: "{{ job_node_uids|default({}) | combine({ workflow_node.index : workflow_node_start_output.json.id }) }}"
   when: workflow_node.type == 'start'
@@ -53,12 +49,10 @@
       status_code: 200,201,400
     register: workflow_node_success_output
 
-  - name: Add id to dictionary
+  - name: "Add id to dictionary"
     set_fact:
       job_node_uids: "{{ job_node_uids|default({}) | combine({ workflow_node.index : workflow_node_success_output.json.id }) }}"
-
   when: workflow_node.type == 'success'
-
 
 - block:
   - name: "Load up the workflow nodes template if failure"
@@ -77,8 +71,7 @@
       status_code: 200,201,400
     register: workflow_node_failure_output
 
-  - name: Add id to dictionary
+  - name: "Add id to dictionary"
     set_fact:
       job_node_uids: "{{ job_node_uids|default({}) | combine({ workflow_node.index : workflow_node_failure_output.json.id }) }}"
-
   when: workflow_node.type == 'failure'
