@@ -1,0 +1,67 @@
+---
+
+ansible_tower:
+  url: "https://192.168.122.81"
+  admin_password: "admin01"
+  projects:
+  - name: "infra-ansible"
+    description: "Infra Ansible"
+    scm_type: "git"
+    scm_url: "https://github.com/bvkin/infra-ansible.git"
+    scm_branch: "atlassian-workflow2"
+    organization: "Default"
+  - name: "omp-dynamic-inventories"
+    description: "Dynamic Inventories For OMP"
+    scm_type: "git"
+    scm_url: "https://github.com/rht-labs/omp-dynamic-inventories.git"
+    scm_branch: "master"
+    organization: "Default"
+  credentials:
+  - name: "Atlassian Credential"
+    description: "My Credential 1"
+    organization: "Default"
+    credential_type: "Machine"
+  job_templates:
+  - name: "Manage Confluence Space"
+    description: "Copy confluence space from one location to another"
+    inventory: "Atlassian-Test"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/manage-confluence-space/playbook.yml"
+  - name: "Manage Jira"
+    description: "Automation for the creation of a project in Jira"
+    inventory: "Atlassian-Test"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/manage-confluence-space/playbook.yml"
+  - name: "Success Notification"
+    description: "Alert SRE if Jira/Confluece space has been successfully populated"
+    inventory: "Atlassian-Test"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/notifications/email-notify-list-of-users.yml"
+  - name: "Failure Notification"
+    description: "Alert SRE if Jira/Confluece space has failed to populate correctly"
+    inventory: "Atlassian-Test"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/notifications/email-notify-list-of-users.yml"
+  workflow_templates:
+  - name: "Jira and Confluence Management"
+    nodes:
+    - unified_job_template:
+        name: "Manage Confluence Space"
+      success_nodes:
+      - unified_job_template:
+          name: "Success Notification"
+      failure_nodes:
+      - unified_job_template:
+          name: "Failure Notification"
+    - unified_job_template:
+        name: "Manage Jira"
+      success_nodes:
+      - unified_job_template:
+          name: "Success Notification"
+      failure_nodes:
+      - unified_job_template:
+          name: "Failure Notification"
