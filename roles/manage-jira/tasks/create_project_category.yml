@@ -13,7 +13,8 @@
       - Content-Type: 'application/json'
     body: "{ 'name': '{{ atlassian.jira.project.category_name }}',
               'description': '{{ atlassian.jira.project.category_description }}' }"
-    status_code: 201
+    status_code: 
+    - 201
   register: category
 
 - name: Set fact for Category ID
