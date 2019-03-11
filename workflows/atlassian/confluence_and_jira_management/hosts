@@ -1,0 +1,5 @@
+[tower-management-host]
+localhost
+
+[ansible-tower]
+192.168.122.81

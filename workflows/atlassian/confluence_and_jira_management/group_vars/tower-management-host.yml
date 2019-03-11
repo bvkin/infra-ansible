@@ -1,0 +1,104 @@
+---
+
+ansible_tower:
+  url: "https://192.168.122.81"
+  admin_password: "admin01"
+  projects:
+  - name: "infra-ansible"
+    description: "Infra Ansible"
+    scm_type: "git"
+    scm_url: "https://github.com/redhat-cop/infra-ansible.git"
+    scm_branch: "master"
+    organization: "Default"
+  - name: "omp-dynamic-inventories"
+    description: "Dynamic Inventories For OMP"
+    scm_type: "git"
+    scm_url: "https://github.com/rht-labs/omp-dynamic-inventories.git"
+    scm_branch: "master"
+    organization: "Default"
+  - name: "omp-notification-dynamic-inventory"
+    description: "Dynamic Inventories For OMP"
+    scm_type: "git"
+    scm_url: "https://github.com/rht-labs/omp-dynamic-inventories.git"
+    scm_branch: "master"
+    organization: "Default"
+  credentials:
+  - name: "Atlassian Credential"
+    description: "Credential for Atlassian"
+    organization: "Default"
+    credential_type: "Machine"
+  inventories:
+  - name: Atlassian-Inventory
+    variables: ""
+    hosts:
+    - name: "localhost"
+      variables: "---\\nansible_connection: local"
+    - name: "jira"
+      variables: "---\\nansible_connection: local"
+    - name: "confluence"
+      variables: "---\\nansible_connection: local"
+    organization: "Default"
+    sources:
+    - name: "atlassian-inventory"
+      source_project: "omp-dynamic-inventories"
+      description: ""
+      credential: "Atlassian Credential"
+      source: "scm"
+      source_path: "atlassian/atlassian.py"
+      source_vars: "---\nAPI_URL: http://omp-data-api-omp-dev.apps.s11.core.rht-labs.com/api/v1\nTAG: awesomeresidency\nATLASSIAN_URL: https://rhlabs-test.atlassian.net\nATLASSIAN_USERNAME: bkincaid\nATLASSIAN_PASSWORD: password\nCONFLUENCE_SOURCE_KEY: DEMO"
+    - name: "notifications-success"
+      source_project: "omp-notification-dynamic-inventory"
+      description: ""
+      credential: "Atlassian Credential"
+      source: "scm"
+      source_path: "notifications/notifications.py"
+      source_vars: "---\nTAG: BigBenResidency\nEMAIL_USERNAME: testben790@gmail.com\nEMAIL_PASSWORD: word1pass\nEMAIL_CONTENT_URL: https://raw.githubusercontent.com/bvkin/email-test/master/success-email.yml\nAPI_URL: http://omp-data-api-omp-dev.apps.s11.core.rht-labs.com/api/v1"
+    - name: "notifications-failure"
+      source_project: "omp-notification-dynamic-inventory"
+      description: ""
+      credential: "Atlassian Credential"
+      source: "scm"
+      source_path: "notifications/notifications.py"
+      source_vars: "---\nTAG: BigBenResidency\nEMAIL_USERNAME: testben790@gmail.com\nEMAIL_PASSWORD: word1pass\nEMAIL_CONTENT_URL: https://raw.githubusercontent.com/bvkin/email-test/master/failure-email.yml\nAPI_URL: http://omp-data-api-omp-dev.apps.s11.core.rht-labs.com/api/v1"
+  job_templates:
+  - name: "Manage Confluence Project"
+    description: "Copy confluence space from one location to another"
+    inventory: "Atlassian-Inventory"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/manage-confluence-space/playbook.yml"
+  - name: "Manage Jira Project"
+    description: "Automation for the creation of a project in Jira"
+    inventory: "Atlassian-Inventory"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/manage-jira/manage-jira.yml"
+  - name: "Success Notification"
+    description: "Alert SRE if Jira/Confluece space has been successfully populated"
+    inventory: "Atlassian-Inventory"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/notifications/email-notify-users.yml"
+  - name: "Failure Notification"
+    description: "Alert SRE if Jira/Confluece space has failed to populate correctly"
+    inventory: "Atlassian-Inventory"
+    credential: "Atlassian Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/notifications/email-notify-users.yml"
+  workflow_templates:
+  - name: "Jira and Confluence Management"
+    nodes:
+    - unified_job_template:
+        name: "Manage Jira Project"
+      success_nodes:
+      - unified_job_template:
+          name: "Manage Confluence Project"
+        success_nodes:
+        - unified_job_template:
+            name: "Success Notification"
+        failure_nodes:
+        - unified_job_template:
+            name: "Failure Notification"
+      failure_nodes:
+      - unified_job_template:
+          name: "Failure Notification"

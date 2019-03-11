@@ -1,0 +1,38 @@
+---
+
+ansible_tower:
+  url: "https://192.168.122.81"
+  admin_password: "admin01"
+  projects:
+  - name: "infra-ansible"
+    description: "Infra Ansible"
+    scm_type: "git"
+    scm_url: "https://github.com/bvkin/infra-ansible.git"
+    scm_branch: "atlassian-workflow2"
+    organization: "Default"
+  - name: "omp-dynamic-inventories"
+    description: "Dynamic Inventories For OMP"
+    scm_type: "git"
+    scm_url: "https://github.com/rht-labs/omp-dynamic-inventories.git"
+    scm_branch: "master"
+    organization: "Default"
+  credentials:
+  - name: "Identity Credential"
+    description: "My Identity Credential"
+    organization: "Default"
+    credential_type: "Machine"
+  job_templates:
+  - name: "Manage Atlassian Identities"
+    description: "Update atlassian users and groups"
+    inventory: "Identity-Test"
+    credential: "Identity Credential"
+    project: "infra-ansible"
+    playbook: "playbooks/manage-identities/manage-atlassian-identities.yml"
+  workflow_templates:
+  - name: "Identity Management"
+    nodes:
+    - unified_job_template:
+        name: "Manage Atlassian Identities"
+
+
+  
